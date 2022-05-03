@@ -1,0 +1,42 @@
+version: '3'
+
+volumes:
+  pgdata:
+
+services:
+  db:
+    image: postgres:alpine
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 5667:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./.docker/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:alpine
+
+  ilmsmodule:
+    build:
+      context: .
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
+      - DB_HOST=db
+    env_file:
+      - .env
+
+    container_name: ilmsmodule
+    command: bash -c "yarn && yarn dev"
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/code:cached
+    depends_on:
+      - db
+      - redis
