@@ -2,15 +2,11 @@ import {
   BaseEntity,
   Column,
   Entity,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { StudentExamProgression } from "./StudentExamProgression";
-import { UserRole } from "./enums";
-import { UserContentProgression } from "./UserContentProgression";
-import { UserRoadmapProgression } from "./UserRoadmapProgression";
+import { Question } from "./Question";
 @Entity()
 export class Exam extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -60,4 +56,10 @@ export class Exam extends BaseEntity {
     onUpdate: "CASCADE",
   })
   public studentExamProgressions: StudentExamProgression[];
+
+  //One to Many relation with Question
+  @OneToMany(() => Question, (question) => question.exam, {
+    onUpdate: "CASCADE",
+  })
+  public questions: Question[];
 }

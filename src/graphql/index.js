@@ -3,19 +3,12 @@ import { merge } from "lodash";
 import { typeDefs as directiveTypes, directiveTransformer } from "./directives";
 import { typeDefs as BaseTypes, resolvers as BaseResolvers } from "./base";
 import { typeDefs as AuthTypes, resolvers as AuthResolvers } from "./auth";
-import {
-  typeDefs as RoadmapTypes,
-  resolvers as RoadmapResolvers,
-} from "./roadmap";
-import {
-  typeDefs as ContentTypes,
-  resolvers as ContentResolvers,
-} from "./content";
-import {
-  typeDefs as ProgressionTypes,
-  resolvers as ProgressionResolvers,
-} from "./progression";
+
 import { typeDefs as ExamTypes, resolvers as ExamResolvers } from "./exam";
+import {
+  typeDefs as QuestionTypes,
+  resolvers as QuestionResolvers,
+} from "./question";
 
 import { makeExecutableSchema } from "@graphql-tools/schema";
 
@@ -23,23 +16,13 @@ const resolvers = {};
 
 export const schema = directiveTransformer(
   makeExecutableSchema({
-    typeDefs: [
-      directiveTypes,
-      BaseTypes,
-      AuthTypes,
-      RoadmapTypes,
-      ContentTypes,
-      ProgressionTypes,
-      ExamTypes,
-    ],
+    typeDefs: [directiveTypes, BaseTypes, AuthTypes, ExamTypes, QuestionTypes],
     resolvers: merge(
       resolvers,
       BaseResolvers,
       AuthResolvers,
-      RoadmapResolvers,
-      ContentResolvers,
-      ProgressionResolvers,
-      ExamResolvers
+      ExamResolvers,
+      QuestionResolvers
     ),
   })
 );

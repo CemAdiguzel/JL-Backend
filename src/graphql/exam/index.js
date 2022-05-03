@@ -3,9 +3,7 @@ import {
   gql,
   UserInputError,
 } from "apollo-server-express";
-import { UserContentProgression } from "../../entities/UserContentProgression";
 import { StudentExamProgression } from "../../entities/StudentExamProgression";
-import { Content } from "../../entities/Content";
 import { Exam } from "../../entities/Exam";
 
 const typeDefs = gql`
@@ -25,12 +23,23 @@ const typeDefs = gql`
     resubmissionDate: String!
     status: Boolean!
     studentExamProgressions: [StudentExamProgression]
+    questions: [Question]
   }
 
   type StudentExamProgression {
     id: ID!
     user: User!
     exam: Exam!
+  }
+
+  type Question {
+    id: ID!
+    question: String!
+    answer: String!
+    grade: String!
+    gradingInput: String!
+    gradingOutput: String!
+    autoGrade: Boolean!
   }
 
   extend type Mutation {
@@ -66,6 +75,8 @@ const typeDefs = gql`
       resubmissionDate: String
       status: Boolean
     ): Exam
+
+    deleteExam(id: ID!): Exam
 
     assignedExamToUsers(examId: ID!, userIds: [ID!]!): Exam
   }
@@ -182,6 +193,14 @@ const resolvers = {
       }
 
       await exam.save();
+      return exam;
+    },
+    deleteExam: async (_, { id }, context) => {
+      const exam = await Exam.findOne({ id });
+      if (!exam) {
+        throw new AuthenticationError("Exam not found");
+      }
+      await exam.remove();
       return exam;
     },
     assignedExamToUsers: async (_, { examId, userIds }, context) => {

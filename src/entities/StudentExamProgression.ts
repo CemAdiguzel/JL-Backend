@@ -6,8 +6,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Content } from "./Content";
-import { Progression } from "./enums";
 import { Exam } from "./Exam";
 import { User } from "./User";
 
