@@ -236,6 +236,7 @@ const resolvers = {
       const assignments = await Assignment.find({
         relations: ["questions"],
       });
+      console.log("Naber sivilcem acıktım cem usta");
       return assignments;
     },
   },
