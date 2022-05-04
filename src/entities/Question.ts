@@ -20,7 +20,7 @@ export class Question extends BaseEntity {
   public answer: string;
 
   @Column()
-  public grade: number;
+  public grade: string;
 
   @Column()
   public gradingInput: string;

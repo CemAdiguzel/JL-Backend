@@ -1,5 +1,6 @@
 import { AuthenticationError, gql } from "apollo-server-express";
 import { Question } from "../../entities/Question";
+import { Exam } from "../../entities/Exam";
 
 const typeDefs = gql`
   type Question {
@@ -10,6 +11,23 @@ const typeDefs = gql`
     gradingInput: String!
     gradingOutput: String!
     autoGrade: Boolean!
+  }
+  type Exam {
+    id: ID!
+    title: String!
+    description: String!
+    type: String!
+    date: String!
+    time: String!
+    dueDate: String!
+    dueTime: String!
+    duration: String!
+    gradeScale: String!
+    resubmissionNumber: String!
+    resubmissionTime: String!
+    resubmissionDate: String!
+    status: Boolean!
+    questions: [Question]
   }
 
   extend type Mutation {
@@ -33,8 +51,6 @@ const typeDefs = gql`
     ): Question
 
     deleteQuestion(id: ID!): Question
-
-    assignedQuestionToExam(examId: ID!, userIds: [ID!]!): Question
   }
 
   extend type Query {
@@ -62,7 +78,15 @@ const resolvers = {
     },
     updateQuestion: async (
       _,
-      { id, questionDesc, answer, grade, gradingInput, gradingOutput, autoGrade },
+      {
+        id,
+        questionDesc,
+        answer,
+        grade,
+        gradingInput,
+        gradingOutput,
+        autoGrade,
+      },
       context
     ) => {
       const question = await Question.findOne({ id });
@@ -85,20 +109,7 @@ const resolvers = {
       }
       await question.remove();
       return question;
-    },
-    assignedQuestionToExam: async (_, { examId, questionIds }, context) => {
-      const exam = await Exam.findOne({ id: examId });
-      if (!exam) {
-        throw new Error("Exam not found");
-      }
-      const questions = await Question.find({ id: questionIds });
-      if (!questions) {
-        throw new Error("Question not found");
-      }
-      exam.questions = questions;
-      await exam.save();
-      return exam;
-    },
+    }
   },
   Query: {
     getQuestion: async (_, { id }, context) => {

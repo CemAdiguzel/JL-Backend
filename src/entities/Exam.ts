@@ -22,13 +22,13 @@ export class Exam extends BaseEntity {
   public type: string;
 
   @Column()
-  public date: Date;
+  public date: String;
 
   @Column()
-  public time: String;
+  public time: string;
 
   @Column()
-  public dueDate: Date;
+  public dueDate: string;
 
   @Column()
   public dueTime: string;
@@ -43,10 +43,10 @@ export class Exam extends BaseEntity {
   public resubmissionNumber: number;
 
   @Column()
-  public resubmissionTime: String;
+  public resubmissionTime: string;
 
   @Column()
-  public resubmissionDate: Date;
+  public resubmissionDate: string;
 
   @Column()
   public status: boolean;

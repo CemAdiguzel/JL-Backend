@@ -5,6 +5,7 @@ import {
 } from "apollo-server-express";
 import { StudentExamProgression } from "../../entities/StudentExamProgression";
 import { Exam } from "../../entities/Exam";
+import { Question } from "../../entities/Question";
 
 const typeDefs = gql`
   type Exam {
@@ -36,7 +37,7 @@ const typeDefs = gql`
     id: ID!
     question: String!
     answer: String!
-    grade: String!
+    grade: String
     gradingInput: String!
     gradingOutput: String!
     autoGrade: Boolean!
@@ -79,6 +80,7 @@ const typeDefs = gql`
     deleteExam(id: ID!): Exam
 
     assignedExamToUsers(examId: ID!, userIds: [ID!]!): Exam
+    assignedQuestionToExam(ExamId: ID!, questionId: ID!): Exam
   }
 
   extend type Query {
@@ -123,7 +125,6 @@ const resolvers = {
       exam.resubmissionDate = resubmissionDate;
       exam.status = status;
 
-      console.log("asdasd", exam.date);
       await exam.save();
 
       return exam;
@@ -220,20 +221,63 @@ const resolvers = {
       }
       return exam;
     },
+    assignedQuestionToExam: async (_, { ExamId, questionId }, context) => {
+      const exam = await Exam.findOne({
+        where: { id: ExamId },
+        relations: ["questions"],
+      });
+      if (!exam) {
+        throw new Error("Exam not found");
+      }
+      const oldQuestion = exam.questions;
+      console.log("oldQuestion", oldQuestion);
+
+      if (oldQuestion) {
+        const newQuestion = await Question.findOne({ id: questionId });
+        if (!newQuestion) {
+          throw new AuthenticationError("Question not found");
+        }
+        exam.questions = [...oldQuestion, newQuestion];
+      } else {
+        const questions = await Question.find({ id: questionId });
+
+        if (!questions) {
+          throw new Error("Question not found");
+        }
+
+        exam.questions = questions;
+      }
+
+      await exam.save();
+      console.log("exam", exam);
+      return exam;
+    },
   },
   Query: {
     getExam: async (_, { id }, context) => {
       const exam = await Exam.findOne({
         where: { id },
-        relations: ["studentExamProgressions", "studentExamProgressions.user"],
+        relations: [
+          "studentExamProgressions",
+          "studentExamProgressions.user",
+          "questions",
+        ],
       });
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
+      console.log(exam);
       return exam;
     },
     examList: async (_, __, context) => {
-      const exams = await Exam.find();
+      const exams = await Exam.find({
+        relations: [
+          "studentExamProgressions",
+          "studentExamProgressions.user",
+          "questions",
+        ],
+      });
+      console.log(exams);
       return exams;
     },
   },
