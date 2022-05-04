@@ -200,7 +200,6 @@ const resolvers = {
         throw new Error("Assignment not found");
       }
       const oldQuestion = assignment.questions;
-      console.log("oldQuestion", oldQuestion);
 
       if (oldQuestion) {
         const newQuestion = await Question.findOne({ id: questionId });
@@ -219,7 +218,6 @@ const resolvers = {
       }
 
       await assignment.save();
-      console.log("assignment", assignment);
       return assignment;
     },
   },
@@ -232,14 +230,12 @@ const resolvers = {
       if (!assignment) {
         throw new AuthenticationError("Assignment not found");
       }
-      console.log(assignment);
       return assignment;
     },
     assignmentList: async (_, __, context) => {
       const assignments = await Assignment.find({
         relations: ["questions"],
       });
-      console.log(assignments);
       return assignments;
     },
   },

@@ -230,7 +230,6 @@ const resolvers = {
         throw new Error("Exam not found");
       }
       const oldQuestion = exam.questions;
-      console.log("oldQuestion", oldQuestion);
 
       if (oldQuestion) {
         const newQuestion = await Question.findOne({ id: questionId });
@@ -249,7 +248,6 @@ const resolvers = {
       }
 
       await exam.save();
-      console.log("exam", exam);
       return exam;
     },
   },
@@ -266,7 +264,6 @@ const resolvers = {
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
-      console.log(exam);
       return exam;
     },
     examList: async (_, __, context) => {
@@ -277,7 +274,6 @@ const resolvers = {
           "questions",
         ],
       });
-      console.log(exams);
       return exams;
     },
   },
