@@ -6,6 +6,10 @@ import { typeDefs as AuthTypes, resolvers as AuthResolvers } from "./auth";
 
 import { typeDefs as ExamTypes, resolvers as ExamResolvers } from "./exam";
 import {
+  typeDefs as AssignmentTypes,
+  resolvers as AssignmentResolvers,
+} from "./assignment";
+import {
   typeDefs as QuestionTypes,
   resolvers as QuestionResolvers,
 } from "./question";
@@ -16,13 +20,21 @@ const resolvers = {};
 
 export const schema = directiveTransformer(
   makeExecutableSchema({
-    typeDefs: [directiveTypes, BaseTypes, AuthTypes, ExamTypes, QuestionTypes],
+    typeDefs: [
+      directiveTypes,
+      BaseTypes,
+      AuthTypes,
+      ExamTypes,
+      QuestionTypes,
+      AssignmentTypes,
+    ],
     resolvers: merge(
       resolvers,
       BaseResolvers,
       AuthResolvers,
       ExamResolvers,
-      QuestionResolvers
+      QuestionResolvers,
+      AssignmentResolvers
     ),
   })
 );

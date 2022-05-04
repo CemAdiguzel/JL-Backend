@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 
 import { Exam } from "./Exam";
+import { Assignment } from "./Assignment";
 @Entity()
 export class Question extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -36,4 +37,9 @@ export class Question extends BaseEntity {
     onUpdate: "CASCADE",
   })
   public exam: Exam;
+  // Many to One relation with Assignment
+  @ManyToOne(() => Assignment, (assignment) => assignment.questions, {
+    onUpdate: "CASCADE",
+  })
+  public assignment: Assignment;
 }
