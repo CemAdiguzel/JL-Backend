@@ -202,7 +202,7 @@ const resolvers = {
         throw new AuthenticationError("Exam not found");
       }
       await exam.remove();
-      return exam;
+      return;
     },
     assignedExamToUsers: async (_, { examId, userIds }, context) => {
       const exam = await Exam.findOne({ id: examId });

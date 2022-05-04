@@ -108,8 +108,8 @@ const resolvers = {
         throw new Error("Question not found");
       }
       await question.remove();
-      return question;
-    }
+      return;
+    },
   },
   Query: {
     getQuestion: async (_, { id }, context) => {

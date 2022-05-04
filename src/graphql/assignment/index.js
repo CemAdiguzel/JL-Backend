@@ -185,7 +185,7 @@ const resolvers = {
         throw new AuthenticationError("Assignment not found");
       }
       await assignment.remove();
-      return assignment;
+      return;
     },
     assignedQuestionToAssignment: async (
       _,
