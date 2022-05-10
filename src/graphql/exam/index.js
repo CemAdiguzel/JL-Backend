@@ -35,12 +35,12 @@ const typeDefs = gql`
 
   type Question {
     id: ID!
-    question: String!
-    answer: String!
+    questionDesc: String
+    answer: String
     grade: String
-    gradingInput: String!
-    gradingOutput: String!
-    autoGrade: Boolean!
+    gradingInput: String
+    gradingOutput: String
+    autoGrade: Boolean
   }
 
   extend type Mutation {
