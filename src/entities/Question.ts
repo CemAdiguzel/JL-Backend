@@ -9,6 +9,7 @@ import {
 
 import { Exam } from "./Exam";
 import { Assignment } from "./Assignment";
+import { Answers } from "./Answer";
 @Entity()
 export class Question extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -42,4 +43,9 @@ export class Question extends BaseEntity {
     onUpdate: "CASCADE",
   })
   public assignment: Assignment;
+  // Many to One relation with Answer
+  @OneToMany(() => Answers, (answer) => answer.questions, {
+    onUpdate: "CASCADE",
+  })
+  public answers: Answers;
 }

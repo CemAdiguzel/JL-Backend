@@ -6,6 +6,7 @@ import {
 import { StudentExamProgression } from "../../entities/StudentExamProgression";
 import { Exam } from "../../entities/Exam";
 import { Question } from "../../entities/Question";
+import { Answers } from "../../entities/Answer";
 
 const typeDefs = gql`
   type Exam {
@@ -41,6 +42,12 @@ const typeDefs = gql`
     gradingInput: String
     gradingOutput: String
     autoGrade: Boolean
+    answers: [Answers]
+  }
+  type Answers {
+    id: ID
+    questionId: ID
+    answer: String
   }
 
   extend type Mutation {

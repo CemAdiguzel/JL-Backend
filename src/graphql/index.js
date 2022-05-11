@@ -13,6 +13,10 @@ import {
   typeDefs as QuestionTypes,
   resolvers as QuestionResolvers,
 } from "./question";
+import {
+  typeDefs as AnswerTypes,
+  resolvers as AnswerResolvers,
+} from "./answer";
 
 import { makeExecutableSchema } from "@graphql-tools/schema";
 
@@ -27,6 +31,7 @@ export const schema = directiveTransformer(
       ExamTypes,
       QuestionTypes,
       AssignmentTypes,
+      AnswerTypes,
     ],
     resolvers: merge(
       resolvers,
@@ -34,7 +39,8 @@ export const schema = directiveTransformer(
       AuthResolvers,
       ExamResolvers,
       QuestionResolvers,
-      AssignmentResolvers
+      AssignmentResolvers,
+      AnswerResolvers
     ),
   })
 );
