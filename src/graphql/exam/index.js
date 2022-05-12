@@ -87,7 +87,7 @@ const typeDefs = gql`
     deleteExam(id: ID!): Exam
 
     assignedExamToUsers(examId: ID!, userIds: [ID!]!): Exam
-    assignedQuestionToExam(ExamId: ID!, questionId: ID!): Exam
+    assignedQuestionToExam(ExamId: ID!, questionId: ID!): Question
   }
 
   extend type Query {
@@ -237,9 +237,8 @@ const resolvers = {
         throw new Error("Exam not found");
       }
       const oldQuestion = exam.questions;
-
+      const newQuestion = await Question.findOne({ id: questionId });
       if (oldQuestion) {
-        const newQuestion = await Question.findOne({ id: questionId });
         if (!newQuestion) {
           throw new AuthenticationError("Question not found");
         }
@@ -255,7 +254,7 @@ const resolvers = {
       }
 
       await exam.save();
-      return exam;
+      return newQuestion;
     },
   },
   Query: {

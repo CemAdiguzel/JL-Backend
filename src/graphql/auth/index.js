@@ -41,7 +41,7 @@ const typeDefs = gql`
   enum UserRole {
     User
     SuperUser
-    CompanyManager
+    Lecturer
   }
 
   type User {
