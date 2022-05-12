@@ -32,9 +32,9 @@ const typeDefs = gql`
     questions: [Question]
   }
   type Answers {
-    id: ID
-    questionId: ID
-    answer: String
+    id: ID!
+    questionId: ID!
+    answer: String!
   }
 
   extend type Mutation {
