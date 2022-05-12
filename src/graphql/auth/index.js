@@ -100,7 +100,6 @@ const resolvers = {
     authenticate: async (_, { email, password }, context) => {
       const user = await User.findOne({
         where: { email },
-        relations: ["company"],
       });
 
       if (!user) {
@@ -146,7 +145,6 @@ const resolvers = {
     getUser: async (_, { id }, context) => {
       const user = await User.findOne({
         where: { id },
-        relations: ["company"],
       });
       if (!user) {
         throw new AuthenticationError("User not found");
