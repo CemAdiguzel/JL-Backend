@@ -132,12 +132,8 @@ const resolvers = {
       if (!answer) {
         throw new Error("Answer not found2");
       }
-      console.log(answer);
-      console.log(question);
       question.answers.push(answer);
-      console.log("answer", answer);
       await question.save();
-      console.log("question", question);
       return question;
     },
   },
