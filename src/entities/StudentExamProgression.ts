@@ -20,6 +20,7 @@ export class StudentExamProgression extends BaseEntity {
   // Many to One relation with Exam
   @ManyToOne(() => Exam, (exam) => exam.studentExamProgressions, {
     onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   public exam: Exam;
   // Many to One relation with User

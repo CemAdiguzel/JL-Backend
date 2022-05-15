@@ -36,16 +36,19 @@ export class Question extends BaseEntity {
   // Many to One relation with Exam
   @ManyToOne(() => Exam, (exam) => exam.questions, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public exam: Exam;
   // Many to One relation with Assignment
   @ManyToOne(() => Assignment, (assignment) => assignment.questions, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public assignment: Assignment;
   // Many to One relation with Answer
   @OneToMany(() => Answers, (answer) => answer.questions, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public answers: Answers;
 }

@@ -208,6 +208,9 @@ const resolvers = {
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
+      // if (exam.status === true) {
+      //   throw new UserInputError("Exam is already started");
+      // }
       await exam.remove();
       return;
     },

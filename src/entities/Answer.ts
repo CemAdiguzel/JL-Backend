@@ -22,6 +22,7 @@ export class Answers extends BaseEntity {
   // One to Many relation with Question
   @ManyToOne(() => Question, (question) => question.answers, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public questions: Question[];
 }
