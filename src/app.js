@@ -1,30 +1,32 @@
-import argon2 from 'argon2';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import express from 'express';
-import passport from 'passport';
-import process from 'process';
-import { createConnection } from 'typeorm';
-import { User } from './entities/User';
-import { apolloServer } from './graphql';
-import jwtStrategy from './middleware/auth';
+import argon2 from "argon2";
+import bodyParser from "body-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import passport from "passport";
+import process from "process";
+import { createConnection } from "typeorm";
+import { User } from "./entities/User";
+import { apolloServer } from "./graphql";
+import jwtStrategy from "./middleware/auth";
 dotenv.config();
 
 createConnection()
   .then(async (connection) => {
     await connection.runMigrations();
     await connection.synchronize();
+    //const cors = require("cors");
+    const Axios = require("axios");
     const PORT = process.env.SERVER_PORT || 3001;
     const app = express();
 
     // Serving static files; defining the path
-    app.use(express.static(__dirname + '/public'));
-    app.use(bodyParser.json({ limit: '50mb' }), cors());
-    passport.use('jwt', jwtStrategy);
+    app.use(express.static(__dirname + "/public"));
+    app.use(bodyParser.json({ limit: "50mb" }), cors());
+    passport.use("jwt", jwtStrategy);
 
-    app.use('/graphql', (req, res, next) => {
-      passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    app.use("/graphql", (req, res, next) => {
+      passport.authenticate("jwt", { session: false }, (err, user, info) => {
         if (user) {
           req.user = user;
         }
@@ -34,12 +36,45 @@ createConnection()
     });
 
     // db connection injection
-    app.use('/graphql', (req, res, next) => {
+    app.use("/graphql", (req, res, next) => {
       req.dbConnection = connection;
       next();
     });
+    app.post("/compile", (req, res) => {
+      //getting the required data from the request
+      let code = req.body.code;
+      let language = req.body.language;
+      let input = req.body.input;
 
-    const path = '/graphql';
+      if (language === "python") {
+        language = "py";
+      }
+
+      let data = {
+        code: code,
+        language: language,
+        input: input,
+      };
+      let config = {
+        method: "post",
+        url: "https://codexweb.netlify.app/.netlify/functions/enforceCode",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+      //calling the code compilation API
+      Axios(config)
+        .then((response) => {
+          res.send(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+
+    const path = "/graphql";
     apolloServer.applyMiddleware({ app, path });
 
     app.listen(PORT, () => {
