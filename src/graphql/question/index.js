@@ -31,6 +31,22 @@ const typeDefs = gql`
     status: Boolean!
     questions: [Question]
   }
+  type Assignment {
+    id: ID!
+    title: String!
+    description: String!
+    type: String!
+    date: String!
+    dueDate: String!
+    dueTime: String!
+    duration: String!
+    gradeScale: String!
+    resubmissionNumber: String!
+    resubmissionTime: String!
+    resubmissionDate: String!
+    status: Boolean!
+    questions: [Question]
+  }
   type Answers {
     id: ID!
     questionId: ID!

@@ -26,12 +26,13 @@ const typeDefs = gql`
 
   type Question {
     id: ID!
-    question: String!
-    answer: String!
+    questionDesc: String
+    answer: String
     grade: String
-    gradingInput: String!
-    gradingOutput: String!
-    autoGrade: Boolean!
+    gradingInput: String
+    gradingOutput: String
+    autoGrade: Boolean
+    answers: [Answers]
   }
 
   extend type Mutation {
@@ -68,7 +69,7 @@ const typeDefs = gql`
 
     deleteAssignment(id: ID!): Assignment
 
-    assignedQuestionToAssignment(AssignmentId: ID!, questionId: ID!): Assignment
+    assignedQuestionToAssignment(AssignmentId: ID!, questionId: ID!): Question
   }
 
   extend type Query {
@@ -200,9 +201,8 @@ const resolvers = {
         throw new Error("Assignment not found");
       }
       const oldQuestion = assignment.questions;
-
+      const newQuestion = await Question.findOne({ id: questionId });
       if (oldQuestion) {
-        const newQuestion = await Question.findOne({ id: questionId });
         if (!newQuestion) {
           throw new AuthenticationError("Question not found");
         }
@@ -218,7 +218,7 @@ const resolvers = {
       }
 
       await assignment.save();
-      return assignment;
+      return newQuestion;
     },
   },
   Query: {
