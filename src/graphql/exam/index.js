@@ -24,6 +24,7 @@ const typeDefs = gql`
     resubmissionTime: String!
     resubmissionDate: String!
     status: Boolean!
+    isEnded: Boolean!
     studentExamProgressions: [StudentExamProgression]
     questions: [Question]
   }
@@ -65,6 +66,7 @@ const typeDefs = gql`
       resubmissionTime: String!
       resubmissionDate: String!
       status: Boolean!
+      isEnded: Boolean!
     ): Exam
 
     updateExam(
@@ -82,6 +84,7 @@ const typeDefs = gql`
       resubmissionTime: String
       resubmissionDate: String
       status: Boolean
+      isEnded: Boolean
     ): Exam
 
     deleteExam(id: ID!): Exam
@@ -114,6 +117,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -131,6 +135,7 @@ const resolvers = {
       exam.resubmissionTime = resubmissionTime;
       exam.resubmissionDate = resubmissionDate;
       exam.status = status;
+      exam.isEnded = isEnded;
 
       await exam.save();
 
@@ -153,6 +158,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -198,6 +204,9 @@ const resolvers = {
       }
       if (status) {
         exam.status = status;
+      }
+      if (isEnded) {
+        exam.isEnded = isEnded;
       }
 
       await exam.save();

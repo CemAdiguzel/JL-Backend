@@ -21,6 +21,7 @@ const typeDefs = gql`
     resubmissionTime: String!
     resubmissionDate: String!
     status: Boolean!
+    isEnded: Boolean!
     questions: [Question]
   }
 
@@ -49,6 +50,7 @@ const typeDefs = gql`
       resubmissionTime: String!
       resubmissionDate: String!
       status: Boolean!
+      isEnded: Boolean!
     ): Assignment
 
     updateAssignment(
@@ -65,6 +67,7 @@ const typeDefs = gql`
       resubmissionTime: String
       resubmissionDate: String
       status: Boolean
+      isEnded: Boolean
     ): Assignment
 
     deleteAssignment(id: ID!): Assignment
@@ -95,6 +98,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -111,6 +115,7 @@ const resolvers = {
       assignment.resubmissionTime = resubmissionTime;
       assignment.resubmissionDate = resubmissionDate;
       assignment.status = status;
+      assignment.isEnded = isEnded;
 
       await assignment.save();
 
@@ -133,6 +138,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -175,6 +181,9 @@ const resolvers = {
       }
       if (status) {
         assignment.status = status;
+      }
+      if (isEnded) {
+        assignment.isEnded = isEnded;
       }
 
       await assignment.save();
