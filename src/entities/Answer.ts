@@ -17,6 +17,9 @@ export class Answers extends BaseEntity {
   public questionId: string;
 
   @Column()
+  public userId: string;
+
+  @Column()
   public answer: string;
 
   // One to Many relation with Question

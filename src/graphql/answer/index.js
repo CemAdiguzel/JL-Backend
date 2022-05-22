@@ -6,6 +6,7 @@ const typeDefs = gql`
   type Answers {
     id: ID!
     questionId: ID!
+    userId: ID!
     answer: String!
   }
   type Question {
@@ -20,7 +21,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createAnswer(questionId: ID!, answer: String!): Answers
+    createAnswer(questionId: ID!, answer: String!, userId: ID!): Answers
   }
   extend type Query {
     getAnswer(id: ID!): Answers
@@ -29,7 +30,7 @@ const typeDefs = gql`
 `;
 const resolvers = {
   Mutation: {
-    createAnswer: async (_, { questionId, answer }) => {
+    createAnswer: async (_, { questionId, answer, userId }) => {
       const question = await Question.findOne({
         where: {
           id: questionId,
@@ -40,6 +41,7 @@ const resolvers = {
       }
       const answerObj = new Answers();
       answerObj.questionId = questionId;
+      answerObj.userId = userId;
       answerObj.answer = answer;
       await answerObj.save();
       return answerObj;

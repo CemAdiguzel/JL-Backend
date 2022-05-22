@@ -48,6 +48,7 @@ const typeDefs = gql`
   type Answers {
     id: ID!
     questionId: ID!
+    userId: ID!
     answer: String!
   }
 
