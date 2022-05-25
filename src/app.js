@@ -73,6 +73,59 @@ createConnection()
           console.log(error);
         });
     });
+    // app.post("/compile", (req, res) => {
+    //   //getting the required data from the request
+    //   let code = req.body.code;
+    //   let language = req.body.language;
+    //   let input = req.body.input;
+    //   fs.writeFileSync("./c.c", req.body.code);
+    //   shell.exec("gcc c.c -o c", function (code, stdout, stderr) {
+    //     const result = {
+    //       stdout: stdout,
+    //       stderr: stderr,
+    //       code: code,
+    //     };
+    //     console.log(JSON.stringify(result));
+    //     res.send(JSON.stringify(result));
+    //   });
+
+    //   // if (language === "python") {
+    //   //   language = 71;
+    //   // }
+    //   // if (language === "c") {
+    //   //   language = 50;
+    //   // }
+    //   // if (language === "cpp") {
+    //   //   language = 54;
+    //   // }
+    //   // if (language === "java") {
+    //   //   language = 62;
+    //   // }
+    //   // let data = {
+    //   //   source_code: code,
+    //   //   language_id: language,
+    //   //   stdin: input,
+    //   // };
+    //   // let config = {
+    //   //   method: "GET",
+    //   //   url: "https://judge0-ce.p.rapidapi.com/about",
+    //   //   headers: {
+    //   //     "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+    //   //     "X-RapidAPI-Key":
+    //   //       "1ecd14bd7cmsh05480726ae36840p175154jsnaa27c03f157b",
+    //   //   },
+    //   //   data: data,
+    //   // };
+    //   //calling the code compilation API
+    //   // Axios(config)
+    //   //   .then((response) => {
+    //   //     res.send(response.data);
+    //   //     console.log("response", response.data);
+    //   //   })
+    //   //   .catch((error) => {
+    //   //     console.log("error", error);
+    //   //   });
+    // });
 
     const path = "/graphql";
     apolloServer.applyMiddleware({ app, path });

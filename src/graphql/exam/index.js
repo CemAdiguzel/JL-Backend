@@ -7,7 +7,8 @@ import { StudentExamProgression } from "../../entities/StudentExamProgression";
 import { Exam } from "../../entities/Exam";
 import { Question } from "../../entities/Question";
 import { Answers } from "../../entities/Answer";
-
+import { User } from "../../entities/User";
+import { In } from "typeorm";
 const typeDefs = gql`
   type Exam {
     id: ID!
@@ -47,7 +48,6 @@ const typeDefs = gql`
   }
   type Answers {
     id: ID!
-    questionId: ID!
     userId: ID!
     answer: String!
   }
@@ -90,13 +90,14 @@ const typeDefs = gql`
 
     deleteExam(id: ID!): Exam
 
-    assignedExamToUsers(examId: ID!, userIds: [ID!]!): Exam
+    assignedExamToUsers(examId: ID!, userIds: [ID!]): Exam
     assignedQuestionToExam(ExamId: ID!, questionId: ID!): Question
   }
 
   extend type Query {
     getExam(id: ID!): Exam!
     examList: [Exam!]!
+    getUserAnswers(examId: ID!, userId: ID!): [Answers!]!
   }
 `;
 
@@ -229,7 +230,7 @@ const resolvers = {
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
-      const users = await User.find({ id: userIds });
+      const users = await User.find({ id: In(userIds) });
       if (!users) {
         throw new AuthenticationError("User not found");
       }
@@ -278,6 +279,7 @@ const resolvers = {
           "studentExamProgressions",
           "studentExamProgressions.user",
           "questions",
+          "questions.answers",
         ],
       });
       if (!exam) {

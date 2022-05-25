@@ -46,9 +46,9 @@ export class Question extends BaseEntity {
   })
   public assignment: Assignment;
   // Many to One relation with Answer
-  @OneToMany(() => Answers, (answer) => answer.questions, {
+  @OneToMany(() => Answers, (answer) => answer.question, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
   })
-  public answers: Answers;
+  public answers: Answers[];
 }

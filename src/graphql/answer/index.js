@@ -5,7 +5,6 @@ import { Answers } from "../../entities/Answer";
 const typeDefs = gql`
   type Answers {
     id: ID!
-    questionId: ID!
     userId: ID!
     answer: String!
   }
@@ -35,12 +34,13 @@ const resolvers = {
         where: {
           id: questionId,
         },
+        relations: ["answers"],
       });
       if (!question) {
         throw new Error("Question not found");
       }
       const answerObj = new Answers();
-      answerObj.questionId = questionId;
+      answerObj.question = question;
       answerObj.userId = userId;
       answerObj.answer = answer;
       await answerObj.save();
@@ -55,7 +55,7 @@ const resolvers = {
         },
       });
       if (!answer) {
-        throw new Error("Answer not found1");
+        throw new Error("Answer not found");
       }
       return answer;
     },

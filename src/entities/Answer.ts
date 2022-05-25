@@ -14,9 +14,6 @@ export class Answers extends BaseEntity {
   public id: string;
 
   @Column()
-  public questionId: string;
-
-  @Column()
   public userId: string;
 
   @Column()
@@ -27,5 +24,5 @@ export class Answers extends BaseEntity {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
   })
-  public questions: Question[];
+  public question: Question;
 }
