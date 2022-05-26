@@ -235,6 +235,9 @@ const resolvers = {
         throw new AuthenticationError("User not found");
       }
       for (const user of users) {
+        if (user.userRole === "Lecturer") {
+          throw new AuthenticationError("User is lecturer");
+        }
         const studentExamProgression = new StudentExamProgression();
         studentExamProgression.user = user;
         studentExamProgression.exam = exam;
