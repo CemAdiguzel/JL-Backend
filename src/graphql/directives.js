@@ -56,9 +56,6 @@ export function directiveTransformer(schema) {
         // the original resolver
         fieldConfig.resolve = async function (source, args, context, info) {
           // THE FUNCTIONAL PART STARTS
-          if (!context.user) {
-            throw new AuthenticationError("User is not authenticated.");
-          }
           return await resolve(source, args, context, info);
           // THE FUNCTIONAL PART ENDS
         };

@@ -6,7 +6,9 @@ import {
 import { StudentExamProgression } from "../../entities/StudentExamProgression";
 import { Exam } from "../../entities/Exam";
 import { Question } from "../../entities/Question";
-
+import { Answers } from "../../entities/Answer";
+import { User } from "../../entities/User";
+import { In } from "typeorm";
 const typeDefs = gql`
   type Exam {
     id: ID!
@@ -23,6 +25,7 @@ const typeDefs = gql`
     resubmissionTime: String!
     resubmissionDate: String!
     status: Boolean!
+    isEnded: Boolean!
     studentExamProgressions: [StudentExamProgression]
     questions: [Question]
   }
@@ -35,12 +38,18 @@ const typeDefs = gql`
 
   type Question {
     id: ID!
-    question: String!
-    answer: String!
+    questionDesc: String
+    answer: String
     grade: String
-    gradingInput: String!
-    gradingOutput: String!
-    autoGrade: Boolean!
+    gradingInput: String
+    gradingOutput: String
+    autoGrade: Boolean
+    answers: [Answers]
+  }
+  type Answers {
+    id: ID!
+    userId: ID!
+    answer: String!
   }
 
   extend type Mutation {
@@ -58,6 +67,7 @@ const typeDefs = gql`
       resubmissionTime: String!
       resubmissionDate: String!
       status: Boolean!
+      isEnded: Boolean!
     ): Exam
 
     updateExam(
@@ -75,17 +85,19 @@ const typeDefs = gql`
       resubmissionTime: String
       resubmissionDate: String
       status: Boolean
+      isEnded: Boolean
     ): Exam
 
     deleteExam(id: ID!): Exam
 
-    assignedExamToUsers(examId: ID!, userIds: [ID!]!): Exam
-    assignedQuestionToExam(ExamId: ID!, questionId: ID!): Exam
+    assignedExamToUsers(examId: ID!, userIds: [ID!]): Exam
+    assignedQuestionToExam(ExamId: ID!, questionId: ID!): Question
   }
 
   extend type Query {
     getExam(id: ID!): Exam!
     examList: [Exam!]!
+    getUserAnswers(examId: ID!, userId: ID!): [Answers!]!
   }
 `;
 
@@ -107,6 +119,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -124,6 +137,7 @@ const resolvers = {
       exam.resubmissionTime = resubmissionTime;
       exam.resubmissionDate = resubmissionDate;
       exam.status = status;
+      exam.isEnded = isEnded;
 
       await exam.save();
 
@@ -146,6 +160,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -192,6 +207,9 @@ const resolvers = {
       if (status) {
         exam.status = status;
       }
+      if (isEnded) {
+        exam.isEnded = isEnded;
+      }
 
       await exam.save();
       return exam;
@@ -201,6 +219,9 @@ const resolvers = {
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
+      // if (exam.status === true) {
+      //   throw new UserInputError("Exam is already started");
+      // }
       await exam.remove();
       return;
     },
@@ -209,7 +230,7 @@ const resolvers = {
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
-      const users = await User.find({ id: userIds });
+      const users = await User.find({ id: In(userIds) });
       if (!users) {
         throw new AuthenticationError("User not found");
       }
@@ -230,9 +251,8 @@ const resolvers = {
         throw new Error("Exam not found");
       }
       const oldQuestion = exam.questions;
-
+      const newQuestion = await Question.findOne({ id: questionId });
       if (oldQuestion) {
-        const newQuestion = await Question.findOne({ id: questionId });
         if (!newQuestion) {
           throw new AuthenticationError("Question not found");
         }
@@ -248,7 +268,7 @@ const resolvers = {
       }
 
       await exam.save();
-      return exam;
+      return newQuestion;
     },
   },
   Query: {
@@ -259,6 +279,7 @@ const resolvers = {
           "studentExamProgressions",
           "studentExamProgressions.user",
           "questions",
+          "questions.answers",
         ],
       });
       if (!exam) {

@@ -47,6 +47,9 @@ export class Assignment extends BaseEntity {
   @Column()
   public status: boolean;
 
+  @Column()
+  public isEnded: boolean;
+
   // One to Many relation with Question
   @OneToMany(() => Question, (question) => question.assignment, {
     onUpdate: "CASCADE",

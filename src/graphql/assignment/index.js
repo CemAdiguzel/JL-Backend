@@ -21,17 +21,19 @@ const typeDefs = gql`
     resubmissionTime: String!
     resubmissionDate: String!
     status: Boolean!
+    isEnded: Boolean!
     questions: [Question]
   }
 
   type Question {
     id: ID!
-    question: String!
-    answer: String!
+    questionDesc: String
+    answer: String
     grade: String
-    gradingInput: String!
-    gradingOutput: String!
-    autoGrade: Boolean!
+    gradingInput: String
+    gradingOutput: String
+    autoGrade: Boolean
+    answers: [Answers]
   }
 
   extend type Mutation {
@@ -48,6 +50,7 @@ const typeDefs = gql`
       resubmissionTime: String!
       resubmissionDate: String!
       status: Boolean!
+      isEnded: Boolean!
     ): Assignment
 
     updateAssignment(
@@ -64,11 +67,12 @@ const typeDefs = gql`
       resubmissionTime: String
       resubmissionDate: String
       status: Boolean
+      isEnded: Boolean
     ): Assignment
 
     deleteAssignment(id: ID!): Assignment
 
-    assignedQuestionToAssignment(AssignmentId: ID!, questionId: ID!): Assignment
+    assignedQuestionToAssignment(AssignmentId: ID!, questionId: ID!): Question
   }
 
   extend type Query {
@@ -94,6 +98,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -110,6 +115,7 @@ const resolvers = {
       assignment.resubmissionTime = resubmissionTime;
       assignment.resubmissionDate = resubmissionDate;
       assignment.status = status;
+      assignment.isEnded = isEnded;
 
       await assignment.save();
 
@@ -132,6 +138,7 @@ const resolvers = {
         resubmissionTime,
         resubmissionDate,
         status,
+        isEnded,
       },
       context
     ) => {
@@ -175,6 +182,9 @@ const resolvers = {
       if (status) {
         assignment.status = status;
       }
+      if (isEnded) {
+        assignment.isEnded = isEnded;
+      }
 
       await assignment.save();
       return assignment;
@@ -200,9 +210,8 @@ const resolvers = {
         throw new Error("Assignment not found");
       }
       const oldQuestion = assignment.questions;
-
+      const newQuestion = await Question.findOne({ id: questionId });
       if (oldQuestion) {
-        const newQuestion = await Question.findOne({ id: questionId });
         if (!newQuestion) {
           throw new AuthenticationError("Question not found");
         }
@@ -218,7 +227,7 @@ const resolvers = {
       }
 
       await assignment.save();
-      return assignment;
+      return newQuestion;
     },
   },
   Query: {

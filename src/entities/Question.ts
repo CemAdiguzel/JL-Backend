@@ -9,6 +9,7 @@ import {
 
 import { Exam } from "./Exam";
 import { Assignment } from "./Assignment";
+import { Answers } from "./Answer";
 @Entity()
 export class Question extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -35,11 +36,19 @@ export class Question extends BaseEntity {
   // Many to One relation with Exam
   @ManyToOne(() => Exam, (exam) => exam.questions, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public exam: Exam;
   // Many to One relation with Assignment
   @ManyToOne(() => Assignment, (assignment) => assignment.questions, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public assignment: Assignment;
+  // Many to One relation with Answer
+  @OneToMany(() => Answers, (answer) => answer.question, {
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  })
+  public answers: Answers[];
 }

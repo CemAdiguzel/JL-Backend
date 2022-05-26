@@ -51,15 +51,20 @@ export class Exam extends BaseEntity {
   @Column()
   public status: boolean;
 
+  @Column()
+  public isEnded: boolean;
+
   // Many to One relation with StudentExamProgression
   @OneToMany(() => StudentExamProgression, (progression) => progression.exam, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public studentExamProgressions: StudentExamProgression[];
 
   //One to Many relation with Question
   @OneToMany(() => Question, (question) => question.exam, {
     onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
   public questions: Question[];
 }

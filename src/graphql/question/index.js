@@ -1,6 +1,7 @@
 import { AuthenticationError, gql } from "apollo-server-express";
 import { Question } from "../../entities/Question";
 import { Exam } from "../../entities/Exam";
+import { Answers } from "../../entities/Answer";
 
 const typeDefs = gql`
   type Question {
@@ -11,6 +12,7 @@ const typeDefs = gql`
     gradingInput: String!
     gradingOutput: String!
     autoGrade: Boolean!
+    answers: [Answers]
   }
   type Exam {
     id: ID!
@@ -28,6 +30,27 @@ const typeDefs = gql`
     resubmissionDate: String!
     status: Boolean!
     questions: [Question]
+  }
+  type Assignment {
+    id: ID!
+    title: String!
+    description: String!
+    type: String!
+    date: String!
+    dueDate: String!
+    dueTime: String!
+    duration: String!
+    gradeScale: String!
+    resubmissionNumber: String!
+    resubmissionTime: String!
+    resubmissionDate: String!
+    status: Boolean!
+    questions: [Question]
+  }
+  type Answers {
+    id: ID!
+    userId: ID!
+    answer: String!
   }
 
   extend type Mutation {
@@ -51,6 +74,7 @@ const typeDefs = gql`
     ): Question
 
     deleteQuestion(id: ID!): Question
+    assignAnswerToQuestion(questionId: ID!, answerId: ID!): Question
   }
 
   extend type Query {
@@ -110,6 +134,24 @@ const resolvers = {
       await question.remove();
       return;
     },
+    assignAnswerToQuestion: async (_, { questionId, answerId }, context) => {
+      const question = await Question.findOne({
+        where: {
+          id: questionId,
+        },
+        relations: ["answers"],
+      });
+      if (!question) {
+        throw new Error("Question not found");
+      }
+      const answer = await Answers.findOne({ id: answerId });
+      if (!answer) {
+        throw new Error("Answer not found2");
+      }
+      question.answers.push(answer);
+      await question.save();
+      return question;
+    },
   },
   Query: {
     getQuestion: async (_, { id }, context) => {
@@ -120,7 +162,9 @@ const resolvers = {
       return question;
     },
     getQuestions: async (_, __, context) => {
-      const questions = await Question.find();
+      const questions = await Question.find({
+        relations: ["answers"],
+      });
       return questions;
     },
   },
