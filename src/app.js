@@ -9,6 +9,8 @@ import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { apolloServer } from "./graphql";
 import jwtStrategy from "./middleware/auth";
+const shell = require("shelljs");
+const fs = require("fs");
 dotenv.config();
 
 createConnection()
@@ -42,52 +44,58 @@ createConnection()
     });
     app.post("/compile", (req, res) => {
       //getting the required data from the request
-      let code = req.body.code;
-      let language = req.body.language;
-      let input = req.body.input;
+      // let code = req.body.code;
+      // let language = req.body.language;
+      // let input = req.body.input;
 
-      if (language === "python") {
-        language = "py";
-      }
+      // if (language === "python") {
+      //   language = "py";
+      // }
 
-      let data = {
-        code: code,
-        language: language,
-        input: input,
-      };
-      let config = {
-        method: "post",
-        url: "https://codexweb.netlify.app/.netlify/functions/enforceCode",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: data,
-      };
-      //calling the code compilation API
-      Axios(config)
-        .then((response) => {
-          res.send(response.data);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      // let data = {
+      //   code: code,
+      //   language: language,
+      //   input: input,
+      // };
+      // let config = {
+      //   method: "post",
+      //   url: "https://codexweb.netlify.app/.netlify/functions/enforceCode",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   data: data,
+      // };
+      // //calling the code compilation API
+      // Axios(config)
+      //   .then((response) => {
+      //     res.send(response.data);
+      //     console.log(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+      fs.writeFileSync("./c.c", req.body.code);
+      shell.exec(
+        "gcc c.c -o c" +
+          `&& ./c << EOF
+        ${req.body.input}
+        EOF `,
+        { async: true, silent: true },
+        function (code, stdout, stderr) {
+          const result = {
+            stdout: stdout,
+            stderr: stderr,
+            code: code,
+          };
+          res.send(JSON.stringify(result));
+        }
+      );
     });
     // app.post("/compile", (req, res) => {
     //   //getting the required data from the request
     //   let code = req.body.code;
     //   let language = req.body.language;
     //   let input = req.body.input;
-    //   fs.writeFileSync("./c.c", req.body.code);
-    //   shell.exec("gcc c.c -o c", function (code, stdout, stderr) {
-    //     const result = {
-    //       stdout: stdout,
-    //       stderr: stderr,
-    //       code: code,
-    //     };
-    //     console.log(JSON.stringify(result));
-    //     res.send(JSON.stringify(result));
-    //   });
 
     //   // if (language === "python") {
     //   //   language = 71;
