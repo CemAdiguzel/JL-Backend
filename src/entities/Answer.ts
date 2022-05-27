@@ -16,6 +16,9 @@ export class Answers extends BaseEntity {
   @Column()
   public userId: string;
 
+  @Column({ nullable: true })
+  public questionId: string;
+
   @Column()
   public answer: string;
 

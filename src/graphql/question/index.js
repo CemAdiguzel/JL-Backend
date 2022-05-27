@@ -51,6 +51,7 @@ const typeDefs = gql`
     id: ID!
     userId: ID!
     answer: String!
+    questionId: ID
   }
 
   extend type Mutation {

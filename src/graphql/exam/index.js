@@ -50,6 +50,7 @@ const typeDefs = gql`
     id: ID!
     userId: ID!
     answer: String!
+    questionId: ID
   }
 
   extend type Mutation {
@@ -90,7 +91,7 @@ const typeDefs = gql`
 
     deleteExam(id: ID!): Exam
 
-    assignedExamToUsers(examId: ID!, userIds: [ID!]): Exam
+    assignedExamToUsers(examId: ID!, userId: ID!): Exam
     assignedQuestionToExam(ExamId: ID!, questionId: ID!): Question
   }
 
@@ -225,24 +226,23 @@ const resolvers = {
       await exam.remove();
       return;
     },
-    assignedExamToUsers: async (_, { examId, userIds }, context) => {
+    assignedExamToUsers: async (_, { examId, userId }, context) => {
       const exam = await Exam.findOne({ id: examId });
       if (!exam) {
         throw new AuthenticationError("Exam not found");
       }
-      const users = await User.find({ id: In(userIds) });
-      if (!users) {
+      const user = await User.findOne({ id: userId });
+      if (!user) {
         throw new AuthenticationError("User not found");
       }
-      for (const user of users) {
-        if (user.userRole === "Lecturer") {
-          throw new AuthenticationError("User is lecturer");
-        }
-        const studentExamProgression = new StudentExamProgression();
-        studentExamProgression.user = user;
-        studentExamProgression.exam = exam;
-        await studentExamProgression.save();
+      if (user.userRole === "Lecturer") {
+        throw new AuthenticationError("User is lecturer");
       }
+      const studentExamProgression = new StudentExamProgression();
+      studentExamProgression.user = user;
+      studentExamProgression.exam = exam;
+      await studentExamProgression.save();
+
       return exam;
     },
     assignedQuestionToExam: async (_, { ExamId, questionId }, context) => {
