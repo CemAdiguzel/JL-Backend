@@ -5,6 +5,8 @@ import {
 } from "apollo-server-express";
 import { Assignment } from "../../entities/Assignment";
 import { Question } from "../../entities/Question";
+import { User } from "../../entities/User";
+import { StudentAssignmentProgression } from "../../entities/StudentAssignmentProgression";
 
 const typeDefs = gql`
   type Assignment {
@@ -22,7 +24,14 @@ const typeDefs = gql`
     resubmissionDate: String!
     status: Boolean!
     isEnded: Boolean!
+    studentAssignmentProgressions: [StudentAssignmentProgression]
     questions: [Question]
+  }
+
+  type StudentAssignmentProgression {
+    id: ID!
+    user: User!
+    assignment: Assignment!
   }
 
   type Question {
@@ -72,6 +81,7 @@ const typeDefs = gql`
 
     deleteAssignment(id: ID!): Assignment
 
+    assignedAssignmentToUser(assignmentId: ID!, userId: ID!): Assignment
     assignedQuestionToAssignment(AssignmentId: ID!, questionId: ID!): Question
   }
 
@@ -197,6 +207,25 @@ const resolvers = {
       await assignment.remove();
       return;
     },
+    assignedAssignmentToUser: async (_, { assignmentId, userId }, context) => {
+      const assignment = await Assignment.findOne({ id: assignmentId });
+      if (!assignment) {
+        throw new AuthenticationError("Assignment not found");
+      }
+      const user = await User.findOne({ id: userId });
+      if (!user) {
+        throw new AuthenticationError("User not found");
+      }
+      if (user.userRole === "Lecturer") {
+        throw new AuthenticationError("User is lecturer");
+      }
+      const studentAssignmentProgression = new StudentAssignmentProgression();
+      studentAssignmentProgression.user = user;
+      studentAssignmentProgression.exam = assignment;
+      await studentAssignmentProgression.save();
+
+      return assignment;
+    },
     assignedQuestionToAssignment: async (
       _,
       { AssignmentId, questionId },
@@ -234,7 +263,12 @@ const resolvers = {
     getAssignment: async (_, { id }, context) => {
       const assignment = await Assignment.findOne({
         where: { id },
-        relations: ["questions"],
+        relations: [
+          "questions",
+          "questions.answers",
+          "studentAssignmentProgressions",
+          "studentAssignmentProgressions.user",
+        ],
       });
       if (!assignment) {
         throw new AuthenticationError("Assignment not found");
@@ -243,7 +277,11 @@ const resolvers = {
     },
     assignmentList: async (_, __, context) => {
       const assignments = await Assignment.find({
-        relations: ["questions"],
+        relations: [
+          "questions",
+          "studentAssignmentProgressions",
+          "studentAssignmentProgressions.user",
+        ],
       });
       return assignments;
     },

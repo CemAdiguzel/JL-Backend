@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { UserRole } from "./enums";
 import { StudentExamProgression } from "./StudentExamProgression";
+import { StudentAssignmentProgression } from "./StudentAssignmentProgression";
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -40,6 +41,14 @@ export class User extends BaseEntity {
     onUpdate: "CASCADE",
   })
   public myExamProgressions: StudentExamProgression[];
+  @OneToMany(
+    () => StudentAssignmentProgression,
+    (progression) => progression.user,
+    {
+      onUpdate: "CASCADE",
+    }
+  )
+  public myAssignmentProgression: StudentAssignmentProgression[];
 
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;

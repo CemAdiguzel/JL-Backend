@@ -6,9 +6,7 @@ import {
 import { StudentExamProgression } from "../../entities/StudentExamProgression";
 import { Exam } from "../../entities/Exam";
 import { Question } from "../../entities/Question";
-import { Answers } from "../../entities/Answer";
 import { User } from "../../entities/User";
-import { In } from "typeorm";
 const typeDefs = gql`
   type Exam {
     id: ID!

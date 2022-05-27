@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Question } from "./Question";
+import { StudentAssignmentProgression } from "./StudentAssignmentProgression";
 @Entity()
 export class Assignment extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -55,4 +56,14 @@ export class Assignment extends BaseEntity {
     onUpdate: "CASCADE",
   })
   public questions: Question[];
+  // One to Many relation with StudentAssignmentProgression
+  @OneToMany(
+    () => StudentAssignmentProgression,
+    (progression) => progression.assignment,
+    {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    }
+  )
+  public studentAssignmentProgressions: StudentAssignmentProgression[];
 }
