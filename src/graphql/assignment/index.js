@@ -221,7 +221,7 @@ const resolvers = {
       }
       const studentAssignmentProgression = new StudentAssignmentProgression();
       studentAssignmentProgression.user = user;
-      studentAssignmentProgression.exam = assignment;
+      studentAssignmentProgression.assignment = assignment;
       await studentAssignmentProgression.save();
 
       return assignment;
